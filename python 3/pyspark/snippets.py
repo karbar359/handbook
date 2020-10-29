@@ -1,5 +1,6 @@
 from pyspark.sql import SparkSession, functions as F, types as T, DataFrame
 from pyspark import SparkFiles
+from pyspark.sql.window import Window
 
 spark = (SparkSession.builder
     .appName("Spark UI name")
@@ -7,6 +8,8 @@ spark = (SparkSession.builder
     .config("parquet.compression", "snappy")
     .config("hive.exec.dynamic.partition", "true")
     .config("hive.exec.dynamic.partition.mode", "nonstrict")
+    .config("spark.sql.crossJoin.enabled", "true")
+    .config("spark.sql.broadcastTimeout", 300)
     .enableHiveSupport()
     .getOrCreate())
 
@@ -50,7 +53,11 @@ df_show_as_string = df._jdf.showstring(2, 20)
 
 df.join(df2, ["id_col_name"], "left")
 
-df.filter(F.col("dt").between(dt_from, dt_to))
+(df.filter(F.col("dt").between(dt_from, dt_to))
+    .withColumn("rn",
+        F.row_number().over(
+            F.Window.partitionBy("col1")
+            .orderBy("col2"))))
 
 df.toPandas()
 
