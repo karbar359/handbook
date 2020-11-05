@@ -25,8 +25,8 @@ spark.catalog.listColumns("table_name", dbName="database_name")
 spark.sql("SHOW PARTITIONS database_name.table_name").collect()
 
 schema = T.StructType([
-    T.StructField("column_name_string", T.StringType(), True), 
-    T.StructField("column_name_bigint", T.IntegerType(), True), 
+    T.StructField("column_name_string", T.StringType(), True),
+    T.StructField("column_name_bigint", T.IntegerType(), True),
     T.StructField("column_name_decimal", T.DecimalType(), True)])
 
 def example_function(x):
@@ -63,7 +63,7 @@ df.toPandas()
 
 spark.catalog.refreshTable("database_name.table_name")
 
-df.saveAsTable("database_name.table_name", mode="overwrite")
+df.write.saveAsTable("database_name.table_name", mode="overwrite")
 
 (df.coalesce(1)
     .insertInto("database_name.table_name", overwrite=True))
